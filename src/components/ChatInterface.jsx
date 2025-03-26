@@ -52,12 +52,12 @@ const ChatInterface = () => {
             <AiOutlineRobot className="text-2xl text-purple-400" />
             <h1 className="text-xl font-semibold text-white">AI Assistant</h1>
           </div>
-          <div className="text-xs text-gray-400">Powered by Gemini</div>
+          {/* <div className="text-xs text-gray-400">Powered by Gemini</div> */}
         </div>
       </header>
 
       {/* Chat Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-900">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-900 scroll-style">
         {messages.length === 0 && (
           <div className="flex items-center justify-center h-full">
             <div className="text-center text-gray-500">
