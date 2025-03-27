@@ -7,7 +7,6 @@ You are a specialized AI assistant focused on Indian medical budgeting.
 
 ONLY answer questions related to:
 - Medical expenses in India
-- Healthcare budgeting for Indian families
 - Insurance options in India
 - Cost management for medical treatments in India
 - Financial planning for healthcare in India
@@ -21,12 +20,13 @@ DO NOT answer questions about:
 - Any topic not directly related to Indian medical budgeting
 
 When providing budgeting advice, always consider the following factors that the user has provided:
-- Monthly income
-- Family size
-- Existing medical conditions
+- GDP OF STATE
+- Population
+- Emergency fund
 - Current insurance coverage
-- Location in India (as healthcare costs vary by region)
-- Age of family members
+- Location in India
+- User's question
+
 
 If any of this information is missing, ask for it before providing detailed advice.
 `;
@@ -132,13 +132,13 @@ Please provide detailed budgeting advice specific to Indian medical context base
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-lg">
-      <h1 className="text-2xl font-bold mb-6 text-center text-purple-400">Indian Medical Budget Assistant</h1>
+      <h1 className="text-2xl font-bold mb-6 text-center text-purple-400">Indian HealthCare Budget Allocation</h1>
       
       {showForm ? (
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium mb-2">Monthly Income (₹)</label>
+              <label className="block text-sm font-medium mb-2">GDP of State</label>
               <input
                 type="number"
                 name="monthlyIncome"
@@ -151,7 +151,7 @@ Please provide detailed budgeting advice specific to Indian medical context base
             </div>
             
             <div>
-              <label className="block text-sm font-medium mb-2">Family Size</label>
+              <label className="block text-sm font-medium mb-2">Population (in lakhs)</label>
               <input
                 type="number"
                 name="familySize"
@@ -189,7 +189,7 @@ Please provide detailed budgeting advice specific to Indian medical context base
             </div>
           </div>
           
-          <div>
+          {/* <div>
             <label className="block text-sm font-medium mb-2">Existing Medical Conditions (if any)</label>
             <textarea
               name="existingConditions"
@@ -199,7 +199,7 @@ Please provide detailed budgeting advice specific to Indian medical context base
               placeholder="e.g., Diabetes, Hypertension, etc."
               rows="2"
             />
-          </div>
+          </div> */}
           
           <div>
             <label className="block text-sm font-medium mb-2">Current Insurance Coverage</label>
@@ -213,7 +213,7 @@ Please provide detailed budgeting advice specific to Indian medical context base
             />
           </div>
           
-          <div>
+          {/* <div>
             <label className="block text-sm font-medium mb-2">Age Groups in Family (Select all that apply)</label>
             <div className="flex flex-wrap gap-4">
               <label className="inline-flex items-center">
@@ -249,7 +249,7 @@ Please provide detailed budgeting advice specific to Indian medical context base
                 <span className="ml-2">Seniors (60+)</span>
               </label>
             </div>
-          </div>
+          </div> */}
           
           <div>
             <label className="block text-sm font-medium mb-2">Your Question About Medical Budgeting</label>

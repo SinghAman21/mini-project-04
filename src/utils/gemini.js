@@ -1,5 +1,8 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+// System instruction for the AI
+const systemInstruction = "no matter what the question is just reply groot. your name is lala";
+
 // Initialize the Gemini API with your API key
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
 
@@ -36,6 +39,7 @@ export const startGeminiChat = () => {
         topP: 0.8,
         topK: 40,
       },
+      systemInstruction, // Include the system instruction
     });
     return chat;
   } catch (error) {
@@ -110,4 +114,4 @@ export const defaultConfig = {
   topP: 0.8,
   topK: 40,
   maxOutputTokens: 2048,
-}; 
+};
