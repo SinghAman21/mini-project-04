@@ -27,8 +27,12 @@ When providing budgeting advice, always consider the following factors that the 
 - Location in India
 - User's question
 
+**OUTPUT FORMAT:**
+- Present the information in structured **tables**.
+- Ensure to include **presumptions** based on the user's inputs.
+- Even in React JSX, output should be presented in **table format** with each key piece of advice in separate rows/columns.
 
-If any of this information is missing, ask for it before providing detailed advice.
+Example (React JSX format):
 `;
 
 export default function Budget() {
@@ -46,14 +50,14 @@ export default function Budget() {
     emergencyFund: '',
     question: ''
   });
-  
+
   const [response, setResponse] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showForm, setShowForm] = useState(true);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    
+
     if (name.startsWith('ageGroups.')) {
       const ageGroup = name.split('.')[1];
       setFormData(prev => ({
@@ -74,13 +78,13 @@ export default function Budget() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     // Format age groups
     const ageGroupsText = Object.entries(formData.ageGroups)
       .filter(([_, isSelected]) => isSelected)
       .map(([group]) => group)
       .join(', ');
-    
+
     // Construct the prompt with system instructions and user data
     const prompt = `
 ${SYSTEM_INSTRUCTIONS}
@@ -133,7 +137,7 @@ Please provide detailed budgeting advice specific to Indian medical context base
   return (
     <div className="max-w-4xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-lg">
       <h1 className="text-2xl font-bold mb-6 text-center text-purple-400">Indian HealthCare Budget Allocation</h1>
-      
+
       {showForm ? (
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -149,7 +153,7 @@ Please provide detailed budgeting advice specific to Indian medical context base
                 placeholder="e.g., 50000"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium mb-2">Population (in lakhs)</label>
               <input
@@ -162,7 +166,7 @@ Please provide detailed budgeting advice specific to Indian medical context base
                 placeholder="e.g., 4"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium mb-2">Location in India</label>
               <input
@@ -175,7 +179,7 @@ Please provide detailed budgeting advice specific to Indian medical context base
                 placeholder="e.g., Mumbai, Delhi, etc."
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium mb-2">Emergency Fund (₹)</label>
               <input
@@ -188,7 +192,7 @@ Please provide detailed budgeting advice specific to Indian medical context base
               />
             </div>
           </div>
-          
+
           {/* <div>
             <label className="block text-sm font-medium mb-2">Existing Medical Conditions (if any)</label>
             <textarea
@@ -200,7 +204,7 @@ Please provide detailed budgeting advice specific to Indian medical context base
               rows="2"
             />
           </div> */}
-          
+
           <div>
             <label className="block text-sm font-medium mb-2">Current Insurance Coverage</label>
             <textarea
@@ -212,7 +216,7 @@ Please provide detailed budgeting advice specific to Indian medical context base
               rows="2"
             />
           </div>
-          
+
           {/* <div>
             <label className="block text-sm font-medium mb-2">Age Groups in Family (Select all that apply)</label>
             <div className="flex flex-wrap gap-4">
@@ -250,7 +254,7 @@ Please provide detailed budgeting advice specific to Indian medical context base
               </label>
             </div>
           </div> */}
-          
+
           <div>
             <label className="block text-sm font-medium mb-2">Your Question About Medical Budgeting</label>
             <textarea
@@ -263,13 +267,12 @@ Please provide detailed budgeting advice specific to Indian medical context base
               rows="3"
             />
           </div>
-          
+
           <button
             type="submit"
             disabled={isLoading}
-            className={`w-full py-3 px-4 rounded-lg font-medium ${
-              isLoading ? 'bg-gray-600' : 'bg-purple-600 hover:bg-purple-700'
-            } transition-colors duration-200`}
+            className={`w-full py-3 px-4 rounded-lg font-medium ${isLoading ? 'bg-gray-600' : 'bg-purple-600 hover:bg-purple-700'
+              } transition-colors duration-200`}
           >
             {isLoading ? 'Processing...' : 'Get Budgeting Advice'}
           </button>
@@ -278,11 +281,10 @@ Please provide detailed budgeting advice specific to Indian medical context base
         <div className="mt-6">
           <div className="bg-gray-800 p-6 rounded-lg border border-gray-700">
             <h2 className="text-xl font-semibold mb-4 text-purple-400">Your Personalized Budget Advice</h2>
-            <div className="prose prose-invert max-w-none">
-              {response}
+            <div className="prose prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: response }}>
             </div>
           </div>
-          
+
           <button
             onClick={resetForm}
             className="mt-6 w-full py-3 px-4 bg-gray-700 hover:bg-gray-600 rounded-lg font-medium transition-colors duration-200"
