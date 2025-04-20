@@ -31,6 +31,7 @@ When providing budgeting advice, always consider the following factors that the 
 - Present the information in structured **tables**.
 - Ensure to include **presumptions** based on the user's inputs.
 - Even in React JSX, output should be presented in **table format** with each key piece of advice in separate rows/columns.
+- Make sure you do not user * in your output. 
 
 Example (React JSX format):
 `;
@@ -133,7 +134,9 @@ Please provide detailed budgeting advice specific to Indian medical context base
     setResponse('');
     setShowForm(true);
   };
-
+// Extract content between ```jsx and ```
+const match = response.match(/```jsx\s*([\s\S]*?)\s*```/);
+const cleanedContent = match ? match[1].trim() : '';
   return (
     <div className="max-w-4xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-lg">
       <h1 className="text-2xl font-bold mb-6 text-center text-purple-400">Indian HealthCare Budget Allocation</h1>
@@ -281,7 +284,7 @@ Please provide detailed budgeting advice specific to Indian medical context base
         <div className="mt-6">
           <div className="bg-gray-800 p-6 rounded-lg border border-gray-700">
             <h2 className="text-xl font-semibold mb-4 text-purple-400">Your Personalized Budget Advice</h2>
-            <div className="prose prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: response }}>
+            <div className="prose prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: cleanedContent }}>
             </div>
           </div>
 
