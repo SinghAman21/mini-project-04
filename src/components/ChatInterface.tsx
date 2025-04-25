@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
-import { FiSend, FiUser, FiCpu, FiCopy, FiCheck, FiLink, FiAlertTriangle, FiCode, FiList } from "react-icons/fi";
+import { FiSend, FiUser, FiCpu, FiCopy, FiCheck, FiLink, FiAlertTriangle, FiCode } from "react-icons/fi";
 import { HiOutlineChatAlt, HiOutlineLightBulb } from "react-icons/hi";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { getStructuredChatResponse, StructuredChatResponse, ChatResponseItem } from "../utils/gemini";
 
 import { Button } from "./ui/button";
@@ -11,7 +11,6 @@ import { Avatar, AvatarFallback } from "./ui/avatar";
 import { Badge } from "./ui/badge";
 import { Separator } from "./ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
-import { useTheme } from "../providers/ThemeProvider";
 
 // Define message types
 interface Message {
