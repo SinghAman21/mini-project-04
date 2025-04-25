@@ -2,11 +2,9 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { BarChart3, MessageCircle, Biohazard } from "lucide-react";
 import { Button } from "./components/ui/button";
-import { useTheme } from "./providers/ThemeProvider";
 
 function App() {
 	const navigate = useNavigate();
-	const { theme } = useTheme?.() || { theme: "light" };
 
 	return (
 		<div className="h-full flex flex-col items-center justify-center relative overflow-hidden">
