@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router";
 import App from "./App";
 import Budget from "./components/Budget";
 import ChatInterface from "./components/ChatInterface";

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Outlet, useLocation, Link } from "react-router-dom";
+import { Outlet, useLocation, Link } from "react-router"
 import { motion, AnimatePresence } from "framer-motion";
 import ThemeToggle from "../components/ThemeToggle";
 import { useTheme } from "../providers/ThemeProvider";
