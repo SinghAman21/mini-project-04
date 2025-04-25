@@ -1,7 +1,17 @@
 import { useState, useRef, useEffect } from "react";
-import { FiSend, FiUser, FiCpu, FiCopy, FiCheck, FiLink, FiAlertTriangle, FiCode, FiList } from "react-icons/fi";
-import { HiOutlineChatAlt, HiOutlineLightBulb } from "react-icons/hi";
-import { motion, AnimatePresence } from "framer-motion";
+import { 
+	Send, 
+	User, 
+	Cpu, 
+	Copy, 
+	Check, 
+	Link, 
+	AlertTriangle, 
+	Code, 
+	MessageCircle,
+	Lightbulb
+} from "lucide-react";
+import { motion } from "framer-motion";
 import { getStructuredChatResponse, StructuredChatResponse, ChatResponseItem } from "../utils/gemini";
 
 import { Button } from "./ui/button";
@@ -11,9 +21,7 @@ import { Avatar, AvatarFallback } from "./ui/avatar";
 import { Badge } from "./ui/badge";
 import { Separator } from "./ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
-import { useTheme } from "../providers/ThemeProvider";
 
-// Define message types
 interface Message {
 	type: "user" | "ai" | "error";
 	content: string;
@@ -183,7 +191,7 @@ const ChatInterface = () => {
 			case "suggestion":
 				return (
 					<div key={index} className="flex items-start gap-2 mb-3 p-2 bg-primary/5 dark:bg-primary/10 border-l-2 border-primary rounded-sm">
-						<HiOutlineLightBulb className="text-primary dark:text-secondary-400 mt-0.5 shrink-0" />
+						<Lightbulb className="text-primary dark:text-secondary-400 mt-0.5 shrink-0" />
 						<p className="text-foreground text-sm">{item.content}</p>
 					</div>
 				);
@@ -191,7 +199,7 @@ const ChatInterface = () => {
 			case "warning":
 				return (
 					<div key={index} className="flex items-start gap-2 mb-3 p-2 bg-destructive/5 border-l-2 border-destructive rounded-sm">
-						<FiAlertTriangle className="text-destructive mt-0.5 shrink-0" />
+						<AlertTriangle className="text-destructive mt-0.5 shrink-0" />
 						<p className="text-destructive dark:text-destructive text-sm">{item.content}</p>
 					</div>
 				);
@@ -200,7 +208,7 @@ const ChatInterface = () => {
 				return (
 					<div key={index} className="mb-3 p-2 border border-border/60 rounded-md">
 						<div className="flex items-center gap-2 mb-1">
-							<FiLink className="text-primary dark:text-secondary-400 shrink-0" />
+							<Link className="text-primary dark:text-secondary-400 shrink-0" />
 							<h4 className="text-sm font-medium">{item.title}</h4>
 						</div>
 						<p className="text-sm text-muted-foreground mb-2">{item.content}</p>
@@ -211,7 +219,7 @@ const ChatInterface = () => {
 							className="text-xs text-primary dark:text-secondary-400 hover:underline flex items-center gap-1"
 						>
 							<span>Visit resource</span>
-							<FiLink className="h-3 w-3" />
+							<Link className="h-3 w-3" />
 						</a>
 					</div>
 				);
@@ -221,7 +229,7 @@ const ChatInterface = () => {
 					<div key={index} className="mb-3 relative">
 						<div className="bg-muted/80 dark:bg-muted/50 rounded-t-md px-3 py-1.5 text-xs font-mono flex items-center justify-between border border-border/60">
 							<div className="flex items-center gap-1.5">
-								<FiCode className="h-3.5 w-3.5 text-muted-foreground" />
+								<Code className="h-3.5 w-3.5 text-muted-foreground" />
 								<span>{item.language || "code"}</span>
 							</div>
 						</div>
@@ -257,7 +265,7 @@ const ChatInterface = () => {
 							transition={{ duration: 0.5 }}
 						>
 							<div className="p-4 rounded-full bg-primary/5 dark:bg-secondary-400/5 mb-4 flex items-center justify-center gap-3">
-								<HiOutlineChatAlt
+								<MessageCircle
 									className="text-primary dark:text-secondary-400"
 									size={38}
 									aria-hidden="true"
@@ -336,11 +344,11 @@ const ChatInterface = () => {
 												aria-label={message.type === "user" ? "Your avatar" : "AI avatar"}
 											>
 												{message.type === "user" ? (
-													<FiUser aria-hidden="true" />
+													<User aria-hidden="true" />
 												) : message.type === "error" ? (
 													"!"
 												) : (
-													<FiCpu aria-hidden="true" />
+													<Cpu aria-hidden="true" />
 												)}
 											</AvatarFallback>
 										</Avatar>
@@ -391,7 +399,7 @@ const ChatInterface = () => {
 														<p className="text-sm">{message.content}</p>
 													) : message.type === "error" ? (
 														<div className="flex items-start gap-2">
-															<FiAlertTriangle className="text-destructive mt-0.5 shrink-0" />
+															<AlertTriangle className="text-destructive mt-0.5 shrink-0" />
 															<p className="text-sm">{message.content}</p>
 														</div>
 													) : message.structuredResponse ? (
@@ -420,9 +428,9 @@ const ChatInterface = () => {
 																		aria-label="Copy message to clipboard"
 																	>
 																		{copiedMessageId === index ? (
-																			<FiCheck className="h-3.5 w-3.5 text-green-500" aria-hidden="true" />
+																			<Check className="h-3.5 w-3.5 text-green-500" aria-hidden="true" />
 																		) : (
-																			<FiCopy className="h-3.5 w-3.5 text-muted-foreground" aria-hidden="true" />
+																			<Copy className="h-3.5 w-3.5 text-muted-foreground" aria-hidden="true" />
 																		)}
 																	</Button>
 																</TooltipTrigger>
@@ -454,7 +462,7 @@ const ChatInterface = () => {
 					>
 						<Avatar className="h-8 w-8 mt-1 border border-border/40">
 							<AvatarFallback className="bg-secondary-400/10 text-secondary-700 dark:text-secondary-400">
-								<FiCpu aria-hidden="true" />
+								<Cpu aria-hidden="true" />
 							</AvatarFallback>
 						</Avatar>
 						<Card className="border-border/60 dark:border-border/30 bg-card">
@@ -528,7 +536,7 @@ const ChatInterface = () => {
 								className="absolute right-0 top-0 h-full px-3 rounded-l-none"
 								aria-label="Send message"
 							>
-								<FiSend
+								<Send
 									className={`h-4 w-4 ${
 										!input.trim() || isLoading ? "text-muted-foreground" : ""
 									}`}

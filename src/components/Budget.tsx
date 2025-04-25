@@ -2,22 +2,21 @@ import React, { useState } from "react";
 import { getStructuredBudgetData, StructuredBudgetData } from "../utils/gemini";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-	HiOutlineChartBar,
-	HiOutlineCurrencyRupee,
-	HiOutlineLocationMarker,
-	HiOutlineShieldCheck,
-	HiOutlineUser,
-	HiOutlineArrowNarrowRight,
-	HiOutlineDocumentText,
-	HiOutlineRefresh,
-	HiOutlineChartSquareBar,
-	HiOutlinePrinter,
-	HiOutlineDownload,
-	HiOutlineExclamation,
-} from "react-icons/hi";
+	BarChart3,
+	IndianRupee,
+	MapPin,
+	ShieldCheck,
+	User,
+	ArrowRight,
+	FileText,
+	RefreshCw,
+	BarChart4,
+	Printer,
+	Download,
+	AlertCircle,
+} from "lucide-react";
 import { useTheme } from "../providers/ThemeProvider";
 
-// Import UI components
 import {
 	Card,
 	CardHeader,
@@ -260,7 +259,7 @@ Please provide a detailed healthcare budget allocation plan for government offic
 
 	return (
 		<div className="w-full max-w-6xl mx-auto">
-			<AnimatePresence mode="wait">
+			<AnimatePresence>
 				{showForm ? (
 					<motion.div
 						key="form"
@@ -278,7 +277,7 @@ Please provide a detailed healthcare budget allocation plan for government offic
 
 							<CardHeader className="pb-3">
 								<div className="flex items-center justify-center">
-									<HiOutlineChartBar className="text-primary text-xl mr-2" />
+									<BarChart3 className="text-primary text-xl mr-2" />
 									<CardTitle className="text-2xl font-display bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70 dark:from-secondary-400 dark:to-secondary-200">
 										Healthcare Budget Allocation Planner
 									</CardTitle>
@@ -323,7 +322,7 @@ Please provide a detailed healthcare budget allocation plan for government offic
 															htmlFor="monthlyIncome"
 															className="flex items-center"
 														>
-															<HiOutlineCurrencyRupee className="mr-1 text-primary dark:text-secondary-400" />
+															<IndianRupee className="mr-1 text-primary dark:text-secondary-400" />
 															State GDP (in Crores ₹)
 														</Label>
 														<div className="relative">
@@ -351,7 +350,7 @@ Please provide a detailed healthcare budget allocation plan for government offic
 															htmlFor="familySize"
 															className="flex items-center"
 														>
-															<HiOutlineUser className="mr-1 text-primary dark:text-secondary-400" />
+															<User className="mr-1 text-primary dark:text-secondary-400" />
 															Population (in lakhs)
 														</Label>
 														<Input
@@ -374,7 +373,7 @@ Please provide a detailed healthcare budget allocation plan for government offic
 														htmlFor="location"
 														className="flex items-center"
 													>
-														<HiOutlineLocationMarker className="mr-1 text-primary dark:text-secondary-400" />
+														<MapPin className="mr-1 text-primary dark:text-secondary-400" />
 														State/Region in India
 													</Label>
 													<Input
@@ -394,7 +393,7 @@ Please provide a detailed healthcare budget allocation plan for government offic
 														className="w-full flex items-center justify-center"
 													>
 														<span>Continue</span>
-														<HiOutlineArrowNarrowRight className="ml-2" />
+														<ArrowRight className="ml-2" />
 													</Button>
 												</motion.div>
 											</motion.div>
@@ -430,7 +429,7 @@ Please provide a detailed healthcare budget allocation plan for government offic
 														htmlFor="emergencyFund"
 														className="flex items-center"
 													>
-														<HiOutlineCurrencyRupee className="mr-1 text-primary dark:text-secondary-400" />
+														<IndianRupee className="mr-1 text-primary dark:text-secondary-400" />
 														Emergency Healthcare Fund (in Crores ₹)
 													</Label>
 													<div className="relative">
@@ -457,7 +456,7 @@ Please provide a detailed healthcare budget allocation plan for government offic
 														htmlFor="insuranceCoverage"
 														className="flex items-center"
 													>
-														<HiOutlineShieldCheck className="mr-1 text-primary dark:text-secondary-400" />
+														<ShieldCheck className="mr-1 text-primary dark:text-secondary-400" />
 														Current Insurance Schemes & Coverage
 													</Label>
 													<Textarea
@@ -493,7 +492,7 @@ Please provide a detailed healthcare budget allocation plan for government offic
 															className="w-full flex items-center justify-center"
 														>
 															<span>Continue</span>
-															<HiOutlineArrowNarrowRight className="ml-2" />
+															<ArrowRight className="ml-2" />
 														</Button>
 													</motion.div>
 												</div>
@@ -530,7 +529,7 @@ Please provide a detailed healthcare budget allocation plan for government offic
 														htmlFor="existingConditions"
 														className="flex items-center"
 													>
-														<HiOutlineExclamation className="mr-1 text-primary dark:text-secondary-400" />
+														<AlertCircle className="mr-1 text-primary dark:text-secondary-400" />
 														Current Healthcare Challenges or Focus Areas
 													</Label>
 													<Textarea
@@ -551,7 +550,7 @@ Please provide a detailed healthcare budget allocation plan for government offic
 														htmlFor="question"
 														className="flex items-center"
 													>
-														<HiOutlineDocumentText className="mr-1 text-primary dark:text-secondary-400" />
+														<FileText className="mr-1 text-primary dark:text-secondary-400" />
 														Budget Planning Objective
 													</Label>
 													<Textarea
@@ -569,7 +568,7 @@ Please provide a detailed healthcare budget allocation plan for government offic
 													<motion.div variants={itemVariants}>
 														<div className="flex flex-col space-y-1.5">
 															<Label className="text-sm font-medium flex items-center">
-																<HiOutlineUser className="mr-1 text-primary dark:text-secondary-400" />
+																<User className="mr-1 text-primary dark:text-secondary-400" />
 																Priority Age Demographics (select all that
 																apply)
 															</Label>
@@ -693,7 +692,7 @@ Please provide a detailed healthcare budget allocation plan for government offic
 															) : (
 																<div className="flex items-center justify-center">
 																	<span>Generate Budget Report</span>
-																	<HiOutlineChartSquareBar className="ml-2" />
+																	<BarChart4 className="ml-2" />
 																</div>
 															)}
 														</Button>
@@ -755,7 +754,7 @@ Please provide a detailed healthcare budget allocation plan for government offic
 											variant="outline"
 											className="flex items-center gap-1"
 										>
-											<HiOutlinePrinter className="h-4 w-4" />
+											<Printer className="h-4 w-4" />
 											<span>Print</span>
 										</Button>
 										<Button
@@ -764,7 +763,7 @@ Please provide a detailed healthcare budget allocation plan for government offic
 											variant="outline"
 											className="flex items-center gap-1"
 										>
-											<HiOutlineDownload className="h-4 w-4" />
+											<Download className="h-4 w-4" />
 											<span>Download</span>
 										</Button>
 									</div>
@@ -972,7 +971,7 @@ Please provide a detailed healthcare budget allocation plan for government offic
 									onClick={resetForm}
 									className="flex items-center text-primary dark:text-secondary hover:text-primary/80 dark:hover:text-secondary/80 transition-colors duration-200"
 								>
-									<HiOutlineRefresh className="mr-2 text-primary" />
+									<RefreshCw className="mr-2 text-primary" />
 									<span className="text-primary">New Analysis</span>
 								</Button>
 							</CardFooter>

@@ -41,6 +41,40 @@ export interface StructuredBudgetData {
   implementationTimeline: TimelinePhase[];
 }
 
+// Define interface for structured epidemic data
+export interface EpidemicKeyFinding {
+  title: string;
+  description: string;
+}
+
+export interface EpidemicActionItem {
+  category: string;
+  actions: string[];
+  priority: string;
+  timeline: string;
+}
+
+export interface EpidemicResourceAllocation {
+  category: string;
+  percentage: number;
+  amount: string;
+  description: string;
+}
+
+export interface EpidemicTimelinePhase {
+  title: string;
+  items: string[];
+}
+
+export interface StructuredEpidemicData {
+  title: string;
+  summary: string;
+  keyFindings: EpidemicKeyFinding[];
+  actionPlan: EpidemicActionItem[];
+  resourceAllocation: EpidemicResourceAllocation[];
+  implementationTimeline: EpidemicTimelinePhase[];
+}
+
 // Define interface for structured chat responses
 export interface ChatResponseItem {
   type: "text" | "list" | "suggestion" | "resource" | "warning" | "code";
@@ -216,6 +250,83 @@ IMPORTANT: Your entire response must be valid JSON following this exact structur
     }
   } catch (error) {
     console.error("Error getting structured Gemini response:", error);
+    throw error;
+  }
+};
+
+/**
+ * Get a structured JSON response for epidemic management from Gemini AI
+ * @param {string} prompt - The user's input prompt with JSON instructions
+ * @returns {Promise<StructuredEpidemicData>} - The structured epidemic data
+ */
+export const getStructuredEpidemicData = async (prompt: string): Promise<StructuredEpidemicData> => {
+  try {
+    // Add instructions to ensure we get a valid JSON response
+    const jsonPrompt = `${prompt}
+    
+IMPORTANT: Your entire response must be valid JSON following this exact structure without any other text, markdown, or explanation:
+{
+  "title": "Epidemic Management Plan: [Disease] Response for [Location]",
+  "summary": "Brief executive summary of the management plan",
+  "keyFindings": [
+    {
+      "title": "Finding title",
+      "description": "Detailed description of the finding and its implications"
+    }
+  ],
+  "actionPlan": [
+    {
+      "category": "Category name (e.g., Containment, Treatment, Prevention)",
+      "actions": ["Action step 1", "Action step 2", "Action step 3"],
+      "priority": "high/medium/low",
+      "timeline": "Immediate/Short-term/Long-term"
+    }
+  ],
+  "resourceAllocation": [
+    {
+      "category": "Resource category",
+      "percentage": number,
+      "amount": "₹X Crores",
+      "description": "Rationale for allocation"
+    }
+  ],
+  "implementationTimeline": [
+    {
+      "title": "Phase 1: Immediate Response (0-30 days)",
+      "items": ["Implementation step 1", "Implementation step 2"]
+    },
+    {
+      "title": "Phase 2: Medium-term Actions (1-6 months)",
+      "items": ["Implementation step 1", "Implementation step 2"]
+    }
+  ]
+}
+`;
+
+    const result = await model.generateContent(jsonPrompt);
+    const response = await result.response;
+    const text = response.text();
+    
+    try {
+      // Parse the response as JSON
+      return JSON.parse(text) as StructuredEpidemicData;
+    } catch (parseError) {
+      console.error("Failed to parse Gemini response as JSON:", parseError);
+      // Try to extract JSON from the response if it contains other text
+      const jsonMatch = text.match(/(\{[\s\S]*\})/);
+      if (jsonMatch) {
+        try {
+          return JSON.parse(jsonMatch[0]) as StructuredEpidemicData;
+        } catch (extractError) {
+          console.error("Failed to extract JSON from response:", extractError);
+          throw new Error("Invalid JSON response from Gemini");
+        }
+      } else {
+        throw new Error("Could not find JSON in Gemini response");
+      }
+    }
+  } catch (error) {
+    console.error("Error getting structured epidemic data:", error);
     throw error;
   }
 };

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FiMoon, FiSun } from "react-icons/fi";
+import { Moon, Sun } from "lucide-react";
 import { useTheme } from "../providers/ThemeProvider";
 import { Button } from "./ui/button";
 import {
@@ -46,9 +46,9 @@ export default function ThemeToggle() {
 								className="h-full w-full flex items-center justify-center"
 							>
 								{isDark ? (
-									<FiMoon className="h-4 w-4 text-secondary-400" />
+									<Moon className="h-4 w-4 text-secondary-400" />
 								) : (
-									<FiSun className="h-4 w-4 text-amber-500" />
+									<Sun className="h-4 w-4 text-amber-500" />
 								)}
 							</motion.div>
 						</AnimatePresence>
