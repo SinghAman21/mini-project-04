@@ -12,7 +12,7 @@ import {
 	Lightbulb
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { getStructuredChatResponse, StructuredChatResponse, ChatResponseItem } from "../utils/gemini";
+import { getStructuredChatResponse, StructuredChatResponse, ChatResponseItem, GeminiAPIError, GeminiInvalidDataError } from "../utils/gemini";
 
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -71,7 +71,7 @@ const ChatInterface = () => {
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 
-		if (!input.trim()) return;
+		if (!input.trim() || isLoading) return;
 
 		const userMessage: Message = { 
 			type: "user", 
@@ -99,10 +99,17 @@ const ChatInterface = () => {
 		} catch (error) {
 			console.error("Error getting AI response:", error);
 
+			let errorMsg = "Sorry, I encountered an error while processing your request. Please try again.";
+			if (error instanceof GeminiAPIError) {
+				errorMsg = "The AI service is currently unavailable. Please check your network connection or API key and try again later.";
+			} else if (error instanceof GeminiInvalidDataError) {
+				errorMsg = "The AI service returned invalid data. Please try rephrasing your question or try again later.";
+			}
+
 			// Add error message to chat
 			const errorMessage: Message = {
 				type: "error",
-				content: "Sorry, I encountered an error while processing your request. Please try again.",
+				content: errorMsg,
 				timestamp: new Date()
 			};
 			setMessages((prev) => [...prev, errorMessage]);
@@ -531,17 +538,18 @@ const ChatInterface = () => {
 							/>
 							<Button
 								type="submit"
-								size="icon"
 								disabled={!input.trim() || isLoading}
 								className="absolute right-0 top-0 h-full px-3 rounded-l-none"
 								aria-label="Send message"
 							>
-								<Send
-									className={`h-4 w-4 ${
-										!input.trim() || isLoading ? "text-muted-foreground" : ""
-									}`}
-									aria-hidden="true"
-								/>
+								{isLoading ? (
+									<Cpu className="animate-spin" size={18} />
+								) : (
+									<Send
+										className={`h-4 w-4 ${!input.trim() || isLoading ? "text-muted-foreground" : ""}`}
+										aria-hidden="true"
+									/>
+								)}
 							</Button>
 						</div>
 					</form>
