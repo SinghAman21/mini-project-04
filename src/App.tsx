@@ -2,18 +2,18 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import "./App.css";
 import ChatInterface from "./components/ChatInterface.tsx";
-import Budget from "./components/Budget.tsx";
+import CaseAnalysis from "./components/CaseAnalysis.tsx";
 import ThemeToggle from "./components/ThemeToggle.tsx";
 import { useTheme } from "./providers/ThemeProvider.tsx";
 import {
-	HiOutlineChartBar,
+	HiOutlineScale,
 	HiOutlineChat,
 	HiOutlineLightBulb,
 	HiOutlineInformationCircle,
 } from "react-icons/hi";
 
 function App() {
-	const [activeComponent, setActiveComponent] = useState("budget");
+	const [activeComponent, setActiveComponent] = useState("caseAnalysis");
 	const [showWelcome, setShowWelcome] = useState(true);
 
 	useTheme();
@@ -49,10 +49,10 @@ function App() {
 								<HiOutlineLightBulb className="text-7xl mx-auto text-primary-400 dark:text-secondary-400" />
 							</motion.div>
 							<h1 className="text-4xl font-display font-bold mb-3 text-gray-900 dark:text-white">
-								HealthCare AI
+								Legal Advisor AI
 							</h1>
 							<p className="text-gray-600 dark:text-gray-300 text-lg">
-								Your intelligent healthcare finance companion
+								Your intelligent legal consultation companion
 							</p>
 						</motion.div>
 					</motion.div>
@@ -78,7 +78,7 @@ function App() {
 											? "bg-primary-600 dark:bg-secondary-600 text-white shadow-light-glow dark:shadow-glow"
 											: "bg-light-100 dark:bg-dark-100 text-gray-500 dark:text-gray-400 hover:bg-light-100/80 dark:hover:bg-dark-100/80"
 									}`}
-									aria-label="Chat Assistant"
+									aria-label="Legal Chat Assistant"
 								>
 									<HiOutlineChat
 										className={`text-xl ${
@@ -90,17 +90,17 @@ function App() {
 								</button>
 
 								<button
-									onClick={() => setActiveComponent("budget")}
+									onClick={() => setActiveComponent("caseAnalysis")}
 									className={`nav-button w-12 h-12 flex items-center justify-center ${
-										activeComponent === "budget"
+										activeComponent === "caseAnalysis"
 											? "bg-primary-600 dark:bg-secondary-600 text-white shadow-light-glow dark:shadow-glow"
 											: "bg-light-100 dark:bg-dark-100 text-gray-500 dark:text-gray-400 hover:bg-light-100/80 dark:hover:bg-dark-100/80"
 									}`}
-									aria-label="Budget Assistant"
+									aria-label="Legal Case Analysis"
 								>
-									<HiOutlineChartBar
+									<HiOutlineScale
 										className={`text-xl ${
-											activeComponent === "budget"
+											activeComponent === "caseAnalysis"
 												? "text-black dark:text-white"
 												: "text-gray-400"
 										}`}
@@ -131,16 +131,16 @@ function App() {
 							>
 								<div className="flex items-center space-x-3">
 									<div className="h-8 w-8 bg-gradient-to-br from-primary-500 to-primary-700 dark:from-secondary-500 dark:to-secondary-800 rounded-lg flex items-center justify-center shadow-light-glow dark:shadow-glow">
-										{activeComponent === "budget" ? (
-											<HiOutlineChartBar className="text-primary text-xl" />
+										{activeComponent === "caseAnalysis" ? (
+											<HiOutlineScale className="text-primary text-xl" />
 										) : (
 											<HiOutlineChat className="text-primary text-xl" />
 										)}
 									</div>
 									<h1 className="text-xl font-display font-semibold text-gray-900 dark:text-white">
-										{activeComponent === "budget"
-											? "Healthcare Budget Planner"
-											: "AI Health Assistant"}
+										{activeComponent === "caseAnalysis"
+											? "Legal Case Analysis"
+											: "AI Legal Advisor"}
 									</h1>
 								</div>
 
@@ -159,7 +159,7 @@ function App() {
 									transition={{ duration: 0.3 }}
 									className="h-[calc(100vh-64px)] overflow-auto p-4 lg:p-6 bg-light-200 dark:bg-dark-300 transition-colors duration-300"
 								>
-									{activeComponent === "chat" ? <ChatInterface /> : <Budget />}
+									{activeComponent === "caseAnalysis" ? <CaseAnalysis /> : <ChatInterface />}
 								</motion.div>
 							</AnimatePresence>
 						</div>

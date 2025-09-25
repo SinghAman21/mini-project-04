@@ -27,12 +27,13 @@ const messageVariants = {
 	exit: { opacity: 0, x: -10, transition: { duration: 0.2 } },
 };
 
-// System instructions for healthcare specific responses
+// System instructions for legal advisor responses
 const SYSTEM_INSTRUCTION = `
-You are a healthcare budget and finance assistant focused on Indian healthcare systems.
-Provide accurate, well-structured information about healthcare finances, insurance, budgeting, and related topics.
-Focus on being helpful, accurate, and clear in your responses.
-Structure responses in a way that makes the information easy to digest for users.
+You are a professional legal advisor assistant focused on Indian legal systems.
+Provide accurate, well-structured information about legal matters, rights, procedures, and legal guidance.
+Always emphasize that this is general legal information and not a substitute for professional legal counsel.
+Structure responses in a way that makes complex legal information easy to understand for users.
+Focus on being helpful, accurate, and clear while maintaining professional legal standards.
 `;
 
 const ChatInterface = () => {
@@ -45,10 +46,11 @@ const ChatInterface = () => {
 	const inputRef = useRef<HTMLInputElement>(null);
 
 	const suggestions = [
-		"How should I budget for unexpected medical expenses in India?",
-		"What are affordable insurance plans for a family of four in Mumbai?",
-		"Compare public vs private healthcare costs in urban India",
-		"What government healthcare schemes are available in rural India?",
+		"What are my rights as a tenant in India under the Rent Control Act?",
+		"How do I file a consumer complaint under the Consumer Protection Act?",
+		"What is the procedure for divorce in India under Hindu Marriage Act?",
+		"What legal documents do I need to buy property in India?",
+		"How to register an FIR and what are my rights during police investigation?",
 	];
 
 	useEffect(() => {
@@ -105,7 +107,6 @@ const ChatInterface = () => {
 	// Copy message content to clipboard
 	const copyToClipboard = async (message: Message, index: number) => {
 		try {
-			// For structured responses, create a formatted text version 
 			let textToCopy = message.content;
 			
 			if (message.structuredResponse) {
@@ -262,18 +263,20 @@ const ChatInterface = () => {
 									aria-hidden="true"
 								/>
 							<h3 className="text-lg font-medium text-foreground">
-								Chat with your Healthcare Assistant
+								Chat with your Legal Advisor Assistant
 							</h3>
 							</div>
 							<p className="max-w-md mx-auto text-sm mb-8">
-								Ask questions about medical budgeting, insurance options, and
-								healthcare financial planning in India.
+								Get legal guidance, understand your rights, and navigate legal procedures in India. 
+								<span className="block text-xs mt-2 text-yellow-600 dark:text-yellow-400">
+									Note: This is general legal information, not professional legal advice.
+								</span>
 							</p>
 						</motion.div>
 
 						<div className="grid gap-3 w-full max-w-md">
 							<p className="text-sm font-medium">Try asking about:</p>
-							<div className="grid grid-cols-1 gap-2 w-full ">
+							<div className="grid grid-cols-1 gap-2 w-full place-items-center">
 								{suggestions.map((suggestion, i) => (
 									<motion.div
 										key={i}
@@ -503,7 +506,7 @@ const ChatInterface = () => {
 
 			<div className="mt-auto">
 				<Separator className="mb-4 border-dashed" />
-				<div className="px-4 pb-4">
+				<div className="px-4 pb-3">
 					<form 
 						onSubmit={handleSubmit} 
 						className="flex items-center gap-2"
@@ -513,12 +516,12 @@ const ChatInterface = () => {
 							<Input
 								ref={inputRef}
 								type="text"
-								placeholder="Type your healthcare question..."
+								placeholder="Type your legal question..."
 								value={input}
 								onChange={(e) => setInput(e.target.value)}
 								autoFocus
-								className="pr-12"
-								aria-label="Type your healthcare question"
+								className="pr-12 rounded-full"
+								aria-label="Type your legal question"
 							/>
 							<Button
 								type="submit"
@@ -536,8 +539,8 @@ const ChatInterface = () => {
 							</Button>
 						</div>
 					</form>
-					<div className="mt-2 text-xs text-center text-muted-foreground">
-						<p>Your interactions help us improve our healthcare budget guidance.</p>
+					<div className="mt-4 text-xs text-center text-muted-foreground">
+						<p>⚖️ This provides general legal information only. Consult a qualified lawyer for specific legal advice.</p>
 					</div>
 				</div>
 			</div>

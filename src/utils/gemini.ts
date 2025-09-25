@@ -1,9 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// Initialize the Gemini API with your API key
-const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
+const genAI = new GoogleGenerativeAI("AIzaSyC82vsllFH1qEwh9bozo_tILF-67Plma7Y");
 
-// Get the Gemini model - using the updated model name format
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
 
 // Define config interface
@@ -14,7 +12,6 @@ interface CustomGenerationConfig {
   maxOutputTokens?: number;
 }
 
-// Define interfaces for structured budget data
 export interface Finding {
   key: string;
   value: string;
@@ -41,7 +38,38 @@ export interface StructuredBudgetData {
   implementationTimeline: TimelinePhase[];
 }
 
-// Define interface for structured chat responses
+export interface LegalFinding {
+  key: string;
+  value: string;
+  priority: "high" | "medium" | "low";
+  legalImplication?: string;
+}
+
+export interface LegalStrategy {
+  category: string;
+  percentage: number;
+  cost: string;
+  description: string;
+  expectedOutcome: string;
+}
+
+export interface LegalPhase {
+  title: string;
+  items: string[];
+  timeframe: string;
+  estimatedCost?: string;
+}
+
+export interface StructuredCaseAnalysisData {
+  title: string;
+  subtitle: string;
+  findings: LegalFinding[];
+  allocations: LegalStrategy[];
+  implementationTimeline: LegalPhase[];
+  riskAssessment?: string;
+  alternativeOptions?: string[];
+}
+
 export interface ChatResponseItem {
   type: "text" | "list" | "suggestion" | "resource" | "warning" | "code";
   content: string;
@@ -80,7 +108,6 @@ export const getGeminiResponse = async (prompt: string): Promise<string> => {
  */
 export const getStructuredChatResponse = async (prompt: string): Promise<StructuredChatResponse> => {
   try {
-    // Add instructions to ensure we get a valid JSON response
     const jsonPrompt = `${prompt}
     
 IMPORTANT: Your entire response must be valid JSON following this exact structure without any other text, markdown, or explanation:
@@ -119,7 +146,7 @@ IMPORTANT: Your entire response must be valid JSON following this exact structur
   ]
 }
 
-Remember that not all types need to be included - only include what's relevant to the query. Focus on providing clear, accurate healthcare finance information.
+Remember that not all types need to be included - only include what's relevant to the query. Focus on providing clear, accurate legal information while emphasizing that this is general information and not specific legal advice.
 `;
 
     const result = await model.generateContent(jsonPrompt);
@@ -151,13 +178,103 @@ Remember that not all types need to be included - only include what's relevant t
 };
 
 /**
+ * Get structured legal case analysis data from Gemini AI
+ * @param {string} prompt - The legal case analysis prompt
+ * @returns {Promise<StructuredCaseAnalysisData>} - The structured legal case data
+ */
+export const getCaseAnalysisData = async (prompt: string): Promise<StructuredCaseAnalysisData> => {
+  try {
+    const jsonPrompt = `${prompt}
+
+IMPORTANT: Your entire response must be valid JSON following this exact structure without any other text, markdown, or explanation:
+{
+  "title": "Legal Case Analysis: [Case Type]",
+  "subtitle": "Analysis for case in [Location]",
+  "findings": [
+    {
+      "key": "Case Strength Assessment",
+      "value": "Strong/Moderate/Weak case based on evidence and legal precedents",
+      "priority": "high",
+      "legalImplication": "Specific legal implications"
+    },
+    {
+      "key": "Key Legal Issues",
+      "value": "Primary legal issues and challenges",
+      "priority": "high",
+      "legalImplication": "How these issues affect the case"
+    }
+  ],
+  "allocations": [
+    {
+      "category": "Legal Research & Documentation",
+      "percentage": 30,
+      "cost": "₹30,000 - ₹50,000",
+      "description": "Detailed research, case law review, and document preparation",
+      "expectedOutcome": "Strong legal foundation"
+    },
+    {
+      "category": "Court Proceedings",
+      "percentage": 40,
+      "cost": "₹40,000 - ₹80,000",
+      "description": "Court fees, hearings, and legal representation",
+      "expectedOutcome": "Proper legal representation in court"
+    }
+  ],
+  "implementationTimeline": [
+    {
+      "title": "Case Preparation Phase",
+      "items": ["Document collection", "Legal research", "Strategy formulation"],
+      "timeframe": "2-4 weeks",
+      "estimatedCost": "₹20,000 - ₹40,000"
+    },
+    {
+      "title": "Filing and Initial Proceedings",
+      "items": ["File case", "Serve notice", "Initial hearings"],
+      "timeframe": "4-8 weeks",
+      "estimatedCost": "₹30,000 - ₹60,000"
+    }
+  ],
+  "riskAssessment": "Assessment of potential risks and challenges",
+  "alternativeOptions": ["Mediation", "Arbitration", "Settlement negotiation"]
+}
+
+Provide realistic legal analysis for Indian legal system. Include appropriate legal disclaimers.
+`;
+
+    const result = await model.generateContent(jsonPrompt);
+    const response = await result.response;
+    const text = response.text();
+    
+    try {
+      return JSON.parse(text) as StructuredCaseAnalysisData;
+    } catch (parseError) {
+      console.error("Failed to parse legal case analysis response as JSON:", parseError);
+      const jsonMatch = text.match(/(\{[\s\S]*\})/);
+      if (jsonMatch) {
+        try {
+          return JSON.parse(jsonMatch[0]) as StructuredCaseAnalysisData;
+        } catch (extractError) {
+          console.error("Failed to extract JSON from legal analysis response:", extractError);
+          throw new Error("Invalid JSON response from Gemini for legal analysis");
+        }
+      } else {
+        throw new Error("Could not find JSON in legal analysis response");
+      }
+    }
+  } catch (error) {
+    console.error("Error getting legal case analysis data:", error);
+    throw error;
+  }
+};
+
+/**
  * Get a structured JSON response from Gemini AI
  * @param {string} prompt - The user's input prompt with JSON instructions
  * @returns {Promise<StructuredBudgetData>} - The structured data
  */
+
 export const getStructuredBudgetData = async (prompt: string): Promise<StructuredBudgetData> => {
   try {
-    // Add instructions to ensure we get a valid JSON response
     const jsonPrompt = `${prompt}
     
 IMPORTANT: Your entire response must be valid JSON following this exact structure without any other text, markdown, or explanation:
@@ -197,7 +314,6 @@ IMPORTANT: Your entire response must be valid JSON following this exact structur
     const text = response.text();
     
     try {
-      // Parse the response as JSON
       return JSON.parse(text) as StructuredBudgetData;
     } catch (parseError) {
       console.error("Failed to parse Gemini response as JSON:", parseError);

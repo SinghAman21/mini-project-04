@@ -118,25 +118,25 @@
 	}
 
 	body {
-		font-feature-settings: 'cv06' 1,'cv10' 1,'cv11' 1,'liga' 1,'calt' 1,'ss02' 1,'ss03' 1,'ss04' 1,'ss07' 1,'ss08' 1,'ss09' 1;
+		font-feature-settings: "cv06" 1, "cv10" 1, "cv11" 1, "liga" 1, "calt" 1,
+			"ss02" 1, "ss03" 1, "ss04" 1, "ss07" 1, "ss08" 1, "ss09" 1;
 		@apply bg-background text-foreground antialiased font-sans;
 	}
+}
 
+/* Custom scrollbar for better visibility */
+::-webkit-scrollbar {
+	width: 1px;
+}
 
-	/* Custom scrollbar for better visibility */
-	.scroll-style::-webkit-scrollbar {
-		width: 6px;
-	}
+::-webkit-scrollbar-track {
+	@apply bg-transparent;
+}
 
-	.scroll-style::-webkit-scrollbar-track {
-		@apply bg-transparent;
-	}
+::-webkit-scrollbar-thumb {
+	@apply bg-border/60 dark:bg-border/40 rounded;
+}
 
-	.scroll-style::-webkit-scrollbar-thumb {
-		@apply bg-border/60 dark:bg-border/40 rounded;
-	}
-
-	.scroll-style::-webkit-scrollbar-thumb:hover {
-		@apply bg-border dark:bg-border/60;
-	}
+::-webkit-scrollbar-thumb:hover {
+	@apply bg-border dark:bg-border/60;
 }
