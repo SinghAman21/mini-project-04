@@ -4,7 +4,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
 
 // Get the Gemini model - using the updated model name format
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
 // Define config interface
 interface CustomGenerationConfig {
@@ -91,6 +91,26 @@ export interface StructuredChatResponse {
   content: ChatResponseItem[];
 }
 
+// Custom error classes for better error handling
+export class GeminiAPIError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "GeminiAPIError";
+  }
+}
+
+export class GeminiInvalidDataError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "GeminiInvalidDataError";
+  }
+}
+
+// Debounce/queue logic for production-level API call optimization
+let lastRequestTime = 0;
+let inFlight = false;
+const MIN_REQUEST_INTERVAL = 2000; // 1.5 seconds between requests
+
 /**
  * Get a response from Gemini AI
  * @param {string} prompt - The user's input prompt
@@ -113,6 +133,17 @@ export const getGeminiResponse = async (prompt: string): Promise<string> => {
  * @returns {Promise<StructuredChatResponse>} - The structured chat data
  */
 export const getStructuredChatResponse = async (prompt: string): Promise<StructuredChatResponse> => {
+  // Wait if a request is already in flight
+  while (inFlight) {
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+  const now = Date.now();
+  const timeSinceLast = now - lastRequestTime;
+  if (timeSinceLast < MIN_REQUEST_INTERVAL) {
+    await new Promise((resolve) => setTimeout(resolve, MIN_REQUEST_INTERVAL - timeSinceLast));
+  }
+  inFlight = true;
+  lastRequestTime = Date.now();
   try {
     // Add instructions to ensure we get a valid JSON response
     const jsonPrompt = `${prompt}
@@ -156,31 +187,37 @@ IMPORTANT: Your entire response must be valid JSON following this exact structur
 Remember that not all types need to be included - only include what's relevant to the query. Focus on providing clear, accurate healthcare finance information.
 `;
 
-    const result = await model.generateContent(jsonPrompt);
-    const response = await result.response;
-    const text = response.text();
-    
+    let result, response, text;
+    try {
+      result = await model.generateContent(jsonPrompt);
+      response = await result.response;
+      text = response.text();
+    } catch (apiError) {
+      throw new GeminiAPIError("Failed to connect to Gemini API. Please check your network or API key.");
+    }
     try {
       // Parse the response as JSON
       return JSON.parse(text) as StructuredChatResponse;
     } catch (parseError) {
-      console.error("Failed to parse Gemini response as JSON:", parseError);
       // Try to extract JSON from the response if it contains other text
       const jsonMatch = text.match(/(\{[\s\S]*\})/);
       if (jsonMatch) {
         try {
           return JSON.parse(jsonMatch[0]) as StructuredChatResponse;
         } catch (extractError) {
-          console.error("Failed to extract JSON from response:", extractError);
-          throw new Error("Invalid JSON response from Gemini");
+          throw new GeminiInvalidDataError("Gemini API returned invalid JSON data.");
         }
       } else {
-        throw new Error("Could not find JSON in Gemini response");
+        throw new GeminiInvalidDataError("Could not find valid JSON in Gemini API response.");
       }
     }
   } catch (error) {
-    console.error("Error getting structured Gemini response:", error);
-    throw error;
+    if (error instanceof GeminiAPIError || error instanceof GeminiInvalidDataError) {
+      throw error;
+    }
+    throw new GeminiAPIError("An unknown error occurred while communicating with Gemini API.");
+  } finally {
+    inFlight = false;
   }
 };
 
