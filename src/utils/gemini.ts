@@ -4,7 +4,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
 
 // Get the Gemini model - using the updated model name format
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
 // Define config interface
 interface CustomGenerationConfig {
@@ -41,6 +41,40 @@ export interface StructuredBudgetData {
   implementationTimeline: TimelinePhase[];
 }
 
+// Define interface for structured epidemic data
+export interface EpidemicKeyFinding {
+  title: string;
+  description: string;
+}
+
+export interface EpidemicActionItem {
+  category: string;
+  actions: string[];
+  priority: string;
+  timeline: string;
+}
+
+export interface EpidemicResourceAllocation {
+  category: string;
+  percentage: number;
+  amount: string;
+  description: string;
+}
+
+export interface EpidemicTimelinePhase {
+  title: string;
+  items: string[];
+}
+
+export interface StructuredEpidemicData {
+  title: string;
+  summary: string;
+  keyFindings: EpidemicKeyFinding[];
+  actionPlan: EpidemicActionItem[];
+  resourceAllocation: EpidemicResourceAllocation[];
+  implementationTimeline: EpidemicTimelinePhase[];
+}
+
 // Define interface for structured chat responses
 export interface ChatResponseItem {
   type: "text" | "list" | "suggestion" | "resource" | "warning" | "code";
@@ -56,6 +90,26 @@ export interface StructuredChatResponse {
   summary: string;
   content: ChatResponseItem[];
 }
+
+// Custom error classes for better error handling
+export class GeminiAPIError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "GeminiAPIError";
+  }
+}
+
+export class GeminiInvalidDataError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "GeminiInvalidDataError";
+  }
+}
+
+// Debounce/queue logic for production-level API call optimization
+let lastRequestTime = 0;
+let inFlight = false;
+const MIN_REQUEST_INTERVAL = 2000; // 1.5 seconds between requests
 
 /**
  * Get a response from Gemini AI
@@ -79,6 +133,17 @@ export const getGeminiResponse = async (prompt: string): Promise<string> => {
  * @returns {Promise<StructuredChatResponse>} - The structured chat data
  */
 export const getStructuredChatResponse = async (prompt: string): Promise<StructuredChatResponse> => {
+  // Wait if a request is already in flight
+  while (inFlight) {
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+  const now = Date.now();
+  const timeSinceLast = now - lastRequestTime;
+  if (timeSinceLast < MIN_REQUEST_INTERVAL) {
+    await new Promise((resolve) => setTimeout(resolve, MIN_REQUEST_INTERVAL - timeSinceLast));
+  }
+  inFlight = true;
+  lastRequestTime = Date.now();
   try {
     // Add instructions to ensure we get a valid JSON response
     const jsonPrompt = `${prompt}
@@ -122,31 +187,37 @@ IMPORTANT: Your entire response must be valid JSON following this exact structur
 Remember that not all types need to be included - only include what's relevant to the query. Focus on providing clear, accurate healthcare finance information.
 `;
 
-    const result = await model.generateContent(jsonPrompt);
-    const response = await result.response;
-    const text = response.text();
-    
+    let result, response, text;
+    try {
+      result = await model.generateContent(jsonPrompt);
+      response = await result.response;
+      text = response.text();
+    } catch (apiError) {
+      throw new GeminiAPIError("Failed to connect to Gemini API. Please check your network or API key.");
+    }
     try {
       // Parse the response as JSON
       return JSON.parse(text) as StructuredChatResponse;
     } catch (parseError) {
-      console.error("Failed to parse Gemini response as JSON:", parseError);
       // Try to extract JSON from the response if it contains other text
       const jsonMatch = text.match(/(\{[\s\S]*\})/);
       if (jsonMatch) {
         try {
           return JSON.parse(jsonMatch[0]) as StructuredChatResponse;
         } catch (extractError) {
-          console.error("Failed to extract JSON from response:", extractError);
-          throw new Error("Invalid JSON response from Gemini");
+          throw new GeminiInvalidDataError("Gemini API returned invalid JSON data.");
         }
       } else {
-        throw new Error("Could not find JSON in Gemini response");
+        throw new GeminiInvalidDataError("Could not find valid JSON in Gemini API response.");
       }
     }
   } catch (error) {
-    console.error("Error getting structured Gemini response:", error);
-    throw error;
+    if (error instanceof GeminiAPIError || error instanceof GeminiInvalidDataError) {
+      throw error;
+    }
+    throw new GeminiAPIError("An unknown error occurred while communicating with Gemini API.");
+  } finally {
+    inFlight = false;
   }
 };
 
@@ -216,6 +287,83 @@ IMPORTANT: Your entire response must be valid JSON following this exact structur
     }
   } catch (error) {
     console.error("Error getting structured Gemini response:", error);
+    throw error;
+  }
+};
+
+/**
+ * Get a structured JSON response for epidemic management from Gemini AI
+ * @param {string} prompt - The user's input prompt with JSON instructions
+ * @returns {Promise<StructuredEpidemicData>} - The structured epidemic data
+ */
+export const getStructuredEpidemicData = async (prompt: string): Promise<StructuredEpidemicData> => {
+  try {
+    // Add instructions to ensure we get a valid JSON response
+    const jsonPrompt = `${prompt}
+    
+IMPORTANT: Your entire response must be valid JSON following this exact structure without any other text, markdown, or explanation:
+{
+  "title": "Epidemic Management Plan: [Disease] Response for [Location]",
+  "summary": "Brief executive summary of the management plan",
+  "keyFindings": [
+    {
+      "title": "Finding title",
+      "description": "Detailed description of the finding and its implications"
+    }
+  ],
+  "actionPlan": [
+    {
+      "category": "Category name (e.g., Containment, Treatment, Prevention)",
+      "actions": ["Action step 1", "Action step 2", "Action step 3"],
+      "priority": "high/medium/low",
+      "timeline": "Immediate/Short-term/Long-term"
+    }
+  ],
+  "resourceAllocation": [
+    {
+      "category": "Resource category",
+      "percentage": number,
+      "amount": "₹X Crores",
+      "description": "Rationale for allocation"
+    }
+  ],
+  "implementationTimeline": [
+    {
+      "title": "Phase 1: Immediate Response (0-30 days)",
+      "items": ["Implementation step 1", "Implementation step 2"]
+    },
+    {
+      "title": "Phase 2: Medium-term Actions (1-6 months)",
+      "items": ["Implementation step 1", "Implementation step 2"]
+    }
+  ]
+}
+`;
+
+    const result = await model.generateContent(jsonPrompt);
+    const response = await result.response;
+    const text = response.text();
+    
+    try {
+      // Parse the response as JSON
+      return JSON.parse(text) as StructuredEpidemicData;
+    } catch (parseError) {
+      console.error("Failed to parse Gemini response as JSON:", parseError);
+      // Try to extract JSON from the response if it contains other text
+      const jsonMatch = text.match(/(\{[\s\S]*\})/);
+      if (jsonMatch) {
+        try {
+          return JSON.parse(jsonMatch[0]) as StructuredEpidemicData;
+        } catch (extractError) {
+          console.error("Failed to extract JSON from response:", extractError);
+          throw new Error("Invalid JSON response from Gemini");
+        }
+      } else {
+        throw new Error("Could not find JSON in Gemini response");
+      }
+    }
+  } catch (error) {
+    console.error("Error getting structured epidemic data:", error);
     throw error;
   }
 };
